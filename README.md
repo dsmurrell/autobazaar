@@ -11,7 +11,7 @@ git clone https://github.com/dsmurrell/autobazaar.git
 cd autobazaar
 ```
 
-Edit the `ab.cfg` file and input your Digital Ocean API token (obtained from the [`API` tab](https://cloud.digitalocean.com/settings/api/tokens) at Digital Ocean), public ssh_key, OpenBazaar-Server username, and OpenBazaar-Server password. Then run:
+Edit the `ab.cfg` file and input your write access enabled Digital Ocean API token (generated from the [`API` tab](https://cloud.digitalocean.com/settings/api/tokens) at Digital Ocean), public ssh_key, OpenBazaar-Server username, and OpenBazaar-Server password. Then run:
 
 ```
 pip install -r requirements.txt
