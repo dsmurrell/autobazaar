@@ -18,3 +18,5 @@ pip install -r requirements.txt
 python spin.py
 ```
 
+If installing the requirements fails due to a `Permission denied` error, either use sudo (not recommended) or use a python environment manangement system like virtualenv or anaconda.
+
