@@ -7,7 +7,7 @@ A tool to install the OpenBazaar Server in the cloud ([Digital Ocean](https://cl
 Before using this script you will need to create a Digital Ocean account.
 
 ```
-git clone git@github.com:dsmurrell/autobazaar.git
+git clone https://github.com/dsmurrell/autobazaar.git
 cd autobazaar
 ```
 
