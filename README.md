@@ -14,7 +14,7 @@ cd autobazaar
 Edit the `ab.cfg` file and input your write access enabled Digital Ocean API token (generated from the [`API` tab](https://cloud.digitalocean.com/settings/api/tokens) at Digital Ocean), public ssh_key, OpenBazaar-Server username, and OpenBazaar-Server password. Then run:
 
 ```
-pip install -r requirements.txt
+sudo pip install -r requirements.txt
 python spin.py
 ```
 
