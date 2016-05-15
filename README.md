@@ -4,6 +4,8 @@ A tool to install the OpenBazaar Server in the cloud on [Digital Ocean](https://
 
 ## usage instructions
 
+Follow the numbered steps below. If you encounter any errors see the 'potential blocks' section below. If your problem is not found there shoot me an email at `dsmurrell at gmail dot com`.
+
 Before using this tool you will need to create a Digital Ocean account. First run:
 
 ```
@@ -18,5 +20,9 @@ pip install -r requirements.txt
 python spin.py
 ```
 
-If installing the requirements fails due to a `Permission denied` error, either use sudo (not recommended) or use a python environment manangement system like virtualenv or anaconda.
+## potential blocks
+
+### `Permission denied` error message while running `pip install -r requirements.txt`
+
+Either use `pip install -r requirements.txt --user` or prepend with `sudo`, or use a python environment manangement system like virtualenv or anaconda so that your python libaries install into a location you have write access to.
 
