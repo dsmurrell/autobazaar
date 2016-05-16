@@ -29,7 +29,7 @@ Follow the numbered steps below. If you encounter any errors see the 'potential 
   ```
   The spin script should run for between 8 and 11 minutes and when it's done, it will print out the IP address, username and password to configure a new server connection.
   
-5. Set up the new server configuration. If you've don't have OpenBazaar you can obtain it from www.openbazaar.org. Once OpenBazaar is installed, add a new server configuration by navigating (top right) menu > default > + New Server and entering the IP address, username and password obtained in the previous step.
+5. Set up the new server configuration. If you've don't have OpenBazaar you can obtain it from www.openbazaar.org. Once OpenBazaar is installed, add a new server configuration by navigating (top right of screen) menu > default > + New Server and entering the IP address, username and password obtained in the previous step.
 
 6. For vendors with existing stores who want to move their store over to the droplet, you can replace the contents of ~/.openbazaar on the droplet with the contents of your database folder on your computer. The database folder can be found in:
   - Window: C:\Users\Username\AppData\Roaming\openbazaar 

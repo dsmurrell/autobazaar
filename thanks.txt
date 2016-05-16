@@ -1,2 +1,4 @@
-Thanks to Mario Dian who's upstart script I borrowed from here: http://mariodian.com/blog/50/quick-and-easy-way-to-setup-openbazaar-server-on-amazon-aws  This script allows the server to restart if the machine reboots unexpectedly. 
+Thanks to Mario Dian who's upstart script I borrowed from here: http://mariodian.com/blog/50/quick-and-easy-way-to-setup-openbazaar-server-on-amazon-aws  This script allows the server to restart if the machine reboots unexpectedly.
+
+No thanks to Mario Dian who very quickly after I created this tool created, very quickly created a script to further automate his EC2 guide (which can be applied to all lunix platforms) and then claimed that I got my ideas for this repo from his script: https://www.reddit.com/r/Bitcoin/comments/4ieqjv/a_script_that_allows_you_to_install_openbazaar/d2xp2ir
 

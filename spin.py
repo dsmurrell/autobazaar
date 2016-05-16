@@ -80,15 +80,15 @@ with settings(host_string=droplet.ip_address, user = 'root'):
         run('sudo chmod 644 openbazaar.conf')
     with cd('~/OpenBazaar-Server'):
         run('python add_user_pass.py %s %s' % (username, password))
-        run('screen -d -m -S OpenBazaar-Server -L python openbazaard.py start -a 0.0.0.0; sleep 1')
-
-end_time = datetime.datetime.now()
-print (end_time-start_time).total_seconds()
+        run('sudo service openbazaar start')
 
 print 'Oh Yeah! Finished installing and running OpenBazaar-Server.'
+end_time = datetime.datetime.now()
+print 'Finished in %d seconds.' % (end_time-start_time).total_seconds()
 print 'Please point your OpenBazaar client at IP: %s, username: %s, password: %s' % (droplet.ip_address, username, password)
 print 'This is done by using a regular install of OpenBazaar (found at www.openbazaar.org), and adding a new server configuration'
-print 'In the OpenBazaar program go to (top right of screen) menu > default > + New Server' 
+print 'In the OpenBazaar program go to (top right of screen) menu > default > + New Server'
+print 'If you need to access your droplet, you can ssh in using \'ssh root@%s\'' % droplet.ip_address
 
 
 
