@@ -2,7 +2,7 @@
 
 A tool to install the OpenBazaar Server in the cloud ([Digital Ocean](https://m.do.co/c/ae523dc7d5e4) for starters). This tool lets you bypass the installation tedium and allows you to run a permanently online store on Digital Ocean's cheapest droplet at $5 a month. The installation process should take somewhere between 8 and 11 minutes. The tool creates the droplet for you, logs on and installs and runs the OpenBazaar-Server, and sets up an init script which will lauch the server if your computer reboots for whatever reason.
 
-authored by Daniel Murrell of [duosear.ch](https://duosear.ch)
+*authored by* Daniel Murrell of [duosear.ch](https://duosear.ch)
 
 ## usage instructions
 
