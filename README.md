@@ -34,4 +34,6 @@ Follow the numbered steps below. If you encounter any errors see the 'potential 
   Either use `pip install -r requirements.txt --user` or prepend with `sudo`, or use a python environment manangement system like virtualenv or anaconda so that your python libaries install into a location you have write access to.
 - `digitalocean.baseapi.DataReadError: Unable to authenticate you.`
   This means that you've not set your Digital Ocean API token in `ab.cfg` correctly.
+- `digitalocean.baseapi.DataReadError: The image you specified is not available in the selected region, you can transfer it to this region from the images pages.`
+  This means that the image for the smallest Ubuntu instance is not available in the region that you selected in the optional section of the `ab.cfg` file.
 
