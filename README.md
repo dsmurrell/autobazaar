@@ -18,7 +18,7 @@ Follow the numbered steps below. If you encounter any errors see the 'potential 
 
 3. Edit the `ab.cfg` file and set up 4 mandatory inputs for autobazaar. 
   - Your write access enabled Digital Ocean API token which can be generated from [Digital Ocean](https://cloud.digitalocean.com/settings/api/tokens)
-  - Your public ssh key. If it already exists, you can find it in the file ~/.ssh/rsa_id.pub If it does not exist, you can generate an ssh key pair using the following command: `ssh-keygen -t rsa -C 'your_email@example.com'`
+  - Your public ssh key. If it already exists, you can find it using `at ~/.ssh/id_rsa.pub`. If it does not exist, you can generate an ssh key pair using the following command: `ssh-keygen -t rsa -C 'your_email@example.com'`
   - The OpenBazaar-Server username you desire
   - The OpenBazaar-Server password you desire
 
