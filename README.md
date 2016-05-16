@@ -2,7 +2,7 @@
 
 A tool to install the OpenBazaar Server in the cloud ([Digital Ocean](https://m.do.co/c/ae523dc7d5e4) for starters). This tool lets you bypass the installation tedium and allows you to run a permanently online store on Digital Ocean's cheapest droplet at $5 a month. The installation process should take somewhere between 8 and 11 minutes. The tool creates the droplet for you, logs on and installs and runs the OpenBazaar-Server, and sets up an init script which will lauch the server if your computer reboots for whatever reason.
 
-Authored by Daniel Murrell of [duosear.ch](https://duosear.ch)
+authored by Daniel Murrell of [duosear.ch](https://duosear.ch)
 
 ## usage instructions
 
@@ -38,8 +38,7 @@ Follow the numbered steps below. If you encounter any errors see the 'potential 
 
   Since your public ssh key is already on the droplet, `ssh root@droplet_ip` should ssh you in and you can use `scp` to carry out the transfer.
 
-
-Any questions? email at `dsmurrell at gmail dot com` 
+any questions? email at `dsmurrell at gmail dot com` 
 
 ## potential blocks
 
@@ -49,4 +48,6 @@ Any questions? email at `dsmurrell at gmail dot com`
   This means that you've not set your Digital Ocean API token in `ab.cfg` correctly.
 - `digitalocean.baseapi.DataReadError: The image you specified is not available in the selected region, you can transfer it to this region from the images pages.`
   This means that the image for the smallest Ubuntu instance is not available in the region that you selected in the optional section of the `ab.cfg` file.
+
+block doesn't exist? email at dsmurrell at gmail dot com
 
