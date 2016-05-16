@@ -87,6 +87,8 @@ print (end_time-start_time).total_seconds()
 
 print 'Oh Yeah! Finished installing and running OpenBazaar-Server.'
 print 'Please point your OpenBazaar client at IP: %s, username: %s, password: %s' % (droplet.ip_address, username, password)
+print 'This is done by using a regular install of OpenBazaar (found at www.openbazaar.org), and adding a new server configuration'
+print 'In the OpenBazaar program go to (top right of screen) menu > default > + New Server' 
 
 
 
