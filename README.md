@@ -29,7 +29,9 @@ Follow the numbered steps below. If you encounter any errors see the 'potential 
   ```
   The spin script should run for between 8 and 11 minutes and when it's done, it will print out the IP address, username and password to configure a new server connection.
   
-5. Set up the new server configuration. If you've don't have OpenBazaar you can obtain it from www.openbazaar.org. Once it's set up, you can add a new server configuration by navigating (top right) menu > default > + New Server and entering the IP address, username and password obtained in the previous step.
+5. Set up the new server configuration. If you've don't have OpenBazaar you can obtain it from www.openbazaar.org. Once OpenBazaar is installed, add a new server configuration by navigating (top right) menu > default > + New Server and entering the IP address, username and password obtained in the previous step.
+
+Any questions? email at `dsmurrell at gmail dot com` 
 
 ## potential blocks
 
