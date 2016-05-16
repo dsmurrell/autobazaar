@@ -38,7 +38,7 @@ Follow the numbered steps below. If you encounter any errors see the 'potential 
 
   Since your public ssh key is already on the droplet, `ssh root@droplet_ip` should ssh you in and you can use `scp` to carry out the transfer.
 
-any questions? email at `dsmurrell at gmail dot com`. 
+any questions? email me at `dsmurrell at gmail dot com`. 
 
 ## potential blocks
 
@@ -49,5 +49,5 @@ any questions? email at `dsmurrell at gmail dot com`.
 - `digitalocean.baseapi.DataReadError: The image you specified is not available in the selected region, you can transfer it to this region from the images pages.`
   This means that the image for the smallest Ubuntu instance is not available in the region that you selected in the optional section of the `ab.cfg` file.
 
-block doesn't exist? email at `dsmurrell at gmail dot com`.
+block doesn't exist? email me at `dsmurrell at gmail dot com`.
 
