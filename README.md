@@ -35,7 +35,8 @@ Follow the numbered steps below. If you encounter any errors see the 'potential 
   - Window: C:\Users\Username\AppData\Roaming\openbazaar 
   - Linux: ~/.openbazaar
   - OSX: ~/Library/Application Support/OpenBazaar
-Since your public ssh key is already on the droplet, `ssh root@droplet_ip` should ssh you in and you can use `scp` to carry out the transfer.
+
+  Since your public ssh key is already on the droplet, `ssh root@droplet_ip` should ssh you in and you can use `scp` to carry out the transfer.
 
 
 Any questions? email at `dsmurrell at gmail dot com` 
