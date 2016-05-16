@@ -11,10 +11,10 @@ Follow the numbered steps below. If you encounter any errors see the 'potential 
 1. If you do not already have a [Digital Ocean](https://m.do.co/c/ae523dc7d5e4) account, you can create one with my referral [link](https://m.do.co/c/ae523dc7d5e4) which will give you a free $10 credit equivalent to 2 months of free store hosting.
 
 2. Clone this GitHub repo to any destination on your computer. In the terminal type:
-```
-git clone https://github.com/dsmurrell/autobazaar.git
-cd autobazaar
-```
+  ```
+  git clone https://github.com/dsmurrell/autobazaar.git
+  cd autobazaar
+  ```
 
 3. Edit the `ab.cfg` file and set up 4 mandatory inputs for autobazaar. 
   - Your write access enabled Digital Ocean API token which can be generated from [Digital Ocean](https://cloud.digitalocean.com/settings/api/tokens)
@@ -22,10 +22,11 @@ cd autobazaar
   - The OpenBazaar-Server username you desire
   - The OpenBazaar-Server password you desire
 
-```
-pip install -r requirements.txt
-python spin.py
-```
+4. Install autobazaar's dependencies and run it by typing the following two lines in the terminal:
+  ```
+  pip install -r requirements.txt
+  python spin.py
+  ```
 
 ## potential blocks
 
