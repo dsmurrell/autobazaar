@@ -31,6 +31,13 @@ Follow the numbered steps below. If you encounter any errors see the 'potential 
   
 5. Set up the new server configuration. If you've don't have OpenBazaar you can obtain it from www.openbazaar.org. Once OpenBazaar is installed, add a new server configuration by navigating (top right) menu > default > + New Server and entering the IP address, username and password obtained in the previous step.
 
+6. For vendors with existing stores you can replace the contents of ~/.openbazaar on the droplet with the contents of your database folder on your computer. The database folder can be found in:
+  - Window: C:\Users\Username\AppData\Roaming\openbazaar 
+  - Linux: ~/.openbazaar
+  - OSX: ~/Library/Application Support/OpenBazaar
+  Since your public ssh key is already on the droplet, `ssh root@droplet_ip` should ssh you in and you can use `scp` to carry out the transfer.
+
+
 Any questions? email at `dsmurrell at gmail dot com` 
 
 ## potential blocks
