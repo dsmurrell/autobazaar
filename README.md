@@ -22,7 +22,8 @@ python spin.py
 
 ## potential blocks
 
-### `Permission denied` error message while running `pip install -r requirements.txt`
-
-Either use `pip install -r requirements.txt --user` or prepend with `sudo`, or use a python environment manangement system like virtualenv or anaconda so that your python libaries install into a location you have write access to.
+- `Permission denied` error message while running `pip install -r requirements.txt`
+  Either use `pip install -r requirements.txt --user` or prepend with `sudo`, or use a python environment manangement system like virtualenv or anaconda so that your python libaries install into a location you have write access to.
+- `digitalocean.baseapi.DataReadError: Unable to authenticate you.`
+  This means that you've not set your Digital Ocean API token in `ab.cfg` correctly.
 
