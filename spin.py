@@ -56,7 +56,7 @@ print 'Installing OpenBazaar-Server dependencies'
 with settings(host_string=droplet.ip_address, user = 'root'):
 
     run('sudo add-apt-repository -y ppa:chris-lea/libsodium')
-    run('sudo apt-get update && sudo apt-get upgrade')
+    run('sudo apt-get update && sudo apt-get -y upgrade')
     run('sudo apt-get install -y git build-essential libssl-dev libffi-dev python-dev openssl python-pip autoconf pkg-config libtool libzmq3-dev libsodium-dev')
     run('sudo pip install cryptography')
     run('git clone https://github.com/zeromq/libzmq')
