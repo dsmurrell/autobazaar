@@ -1,3 +1,5 @@
+NB. Windows users: this may or may not work from Windows. I've not been able to test that it works. If you manage to get it to work, please let me know. I will try to test it on Windows soon. I'm happy to set your server up for you if you give me your Digital Ocean API token.
+
 # autobazaar
 
 A tool to install the OpenBazaar Server in the cloud ([Digital Ocean](https://m.do.co/c/ae523dc7d5e4) for starters). This tool lets you bypass the installation tedium and allows you to run a permanently online store on Digital Ocean's cheapest droplet at $5 a month. The installation process should take somewhere between 8 and 11 minutes. The tool creates the droplet for you, logs on and installs and runs the OpenBazaar-Server, and sets up an init script which will lauch the server if your computer reboots for whatever reason.
