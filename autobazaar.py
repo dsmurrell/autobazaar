@@ -4,6 +4,7 @@ from fabric.api import *
 import datetime
 import ConfigParser
 from password import generate_password
+import json
 
 # read the config file
 Config = ConfigParser.ConfigParser()
@@ -71,6 +72,7 @@ def install_openbazaar(IP):
         run('git clone https://github.com/OpenBazaar/OpenBazaar-Server.git')
         with cd('~/OpenBazaar-Server'):
             run('sudo pip install -r requirements.txt')
+            run('sudo pip install fabric')
 
     sys.stdout.write('\nWaiting again for network services .')
     for i in range(10):
@@ -78,18 +80,37 @@ def install_openbazaar(IP):
         sys.stdout.write('.'); sys.stdout.flush()
     print ''
 
-def change_username_and_password(IP, username, password):
-    local('scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r add_user_pass.py root@%s:~/OpenBazaar-Server/' % IP)
+# def change_username_and_password(IP, username, password):
+#     local('scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r add_user_pass.py root@%s:~/OpenBazaar-Server/' % IP)
+#     with settings(host_string=IP, user = 'root'):
+#         with cd('~/OpenBazaar-Server'):
+#             run('python add_user_pass.py %s %s' % (username, password))
+
+def make_ob_cfg_template(IP):
     with settings(host_string=IP, user = 'root'):
         with cd('~/OpenBazaar-Server'):
-            run('python add_user_pass.py %s %s' % (username, password))
+            run('cp ob.cfg ob_template.cfg')
 
-def add_autostart_service(IP):
+def copy_autobazaar_files(IP):
+    local('scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r manager.py root@%s:~/OpenBazaar-Server/' % IP)
+    local('scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r abc.py root@%s:~/OpenBazaar-Server/' % IP)
+    #local('scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r abc.json root@%s:~/OpenBazaar-Server/' % IP)
+
+def add_store(IP, storename, username, password):
+    with settings(host_string=IP, user = 'root'):
+        with cd('~/OpenBazaar-Server'):
+            run('python abc.py add %s %s %s' % (storename, username, password))
+
+# def run_manager(IP):
+#     with settings(host_string=IP, user = 'root'):
+#         with cd('~/OpenBazaar-Server'):
+#             run('python manager.py')
+
+def add_and_run_autostart_service(IP):
     local('scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r openbazaar.conf root@%s:/etc/init/' % IP)
     with settings(host_string=IP, user = 'root'):
         with cd('/etc/init'):
             run('sudo chmod 644 openbazaar.conf')
-            run('sudo service openbazaar start')
 
 def create_and_install_digitial_ocean():
     start_time = datetime.datetime.now()
@@ -105,7 +126,17 @@ def create_and_install_digitial_ocean():
     print 'In the OpenBazaar program go to (top right of screen) menu > default > + New Server'
     print 'If you need to access your droplet, you can ssh in using \'ssh root@%s\'' % ip_address
 
-create_and_install_digitial_ocean()
+#create_and_install_digitial_ocean()
+
+copy_autobazaar_files('188.166.19.231')
+
+add_store('188.166.19.231', 'purechimp', 'daniel', generate_password(32))
+add_store('188.166.19.231', 'autobazaar', 'daniel', generate_password(32))
+add_store('188.166.19.231', 'dan', 'daniel', generate_password(32))
+
+add_and_run_autostart_service('188.166.19.231')
+
+
 
 
 
