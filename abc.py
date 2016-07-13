@@ -1,0 +1,33 @@
+import sys
+import json
+
+def save_config(config_dict):
+    with open('/root/OpenBazaar-Server/abc.json', 'w') as f:
+        json.dump(config_dict, f)
+
+def load_config():
+    with open('/root/OpenBazaar-Server/abc.json', 'r') as f:
+        try:
+            config_dict = json.load(f)
+        except:
+            config_dict = {}
+    return config_dict
+
+def add_store(storename, username, password):
+    c = load_config()
+    store_numbers = []
+    store_names = []
+    for sname, (snum, uname, pwd) in c.iteritems():
+        store_numbers.append(snum)
+        store_names.append(sname)
+    for n in range(1, 10): # max 9 stores per droplet
+        if n not in store_numbers and storename not in store_names:
+            c[storename] = (n, username, password)
+            save_config(c)
+            return True
+
+    return False
+
+
+if sys.argv[1] == 'add':
+    add_store(sys.argv[2], sys.argv[3], sys.argv[4])
