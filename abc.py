@@ -17,9 +17,9 @@ def add_store(storename, username, password):
     c = load_config()
     store_numbers = []
     store_names = []
-    for sname, (snum, uname, pwd) in c.iteritems():
-        store_numbers.append(snum)
-        store_names.append(sname)
+    for sn, (storenumber, username, password) in c.iteritems():
+        store_numbers.append(storenumber)
+        store_names.append(sn)
     for n in range(1, 10): # max 9 stores per droplet
         if n not in store_numbers and storename not in store_names:
             c[storename] = (n, username, password)
