@@ -28,6 +28,13 @@ def add_store(storename, username, password):
 
     return False
 
+def remove_store(storename):
+    c = load_config()
+    removed = c.pop(storename, None)
+    return removed
 
 if sys.argv[1] == 'add':
     add_store(sys.argv[2], sys.argv[3], sys.argv[4])
+
+if sys.argv[1] == 'remove':
+    remove_store(sys.argv[2])

@@ -4,7 +4,7 @@ import random
 def generate_password(length):
     alphabet = "abcdefghijklmnopqrstuvwxyz"
     upperalphabet = alphabet.upper()
-    pw_len = 16
+    pw_len = length
     pwlist = []
 
     for i in range(pw_len//3):
