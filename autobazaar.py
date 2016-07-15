@@ -70,20 +70,14 @@ def install_openbazaar(ip):
         sys.stdout.write('.'); sys.stdout.flush()
     print ''
 
-def make_ob_cfg_template(ip):
-    with settings(host_string=ip, user = 'root'):
-        with cd('~/OpenBazaar-Server'):
-            run('cp ob.cfg ob_template.cfg')
-
 def copy_autobazaar_files(ip):
-    local('scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r manage.py root@%s:~/OpenBazaar-Server/' % ip)
     local('scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r manager.py root@%s:~/OpenBazaar-Server/' % ip)
-    local('scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r abc.py root@%s:~/OpenBazaar-Server/' % ip)
+    local('scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r ob_template.cfg root@%s:~/OpenBazaar-Server/' % ip)
     local('scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r abc.json root@%s:~/OpenBazaar-Server/' % ip)
-    local('scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r openbazaar.conf root@%s:/etc/init/' % ip)
+    local('scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r openbazaar_manager.conf root@%s:/etc/init/' % ip)
     with settings(host_string=ip, user = 'root'):
         with cd('/etc/init'):
-            run('sudo chmod 644 openbazaar.conf')
+            run('sudo chmod 644 openbazaar_manager.conf')
 
 def add_store(ip, storename, username, password):
     with settings(host_string=ip, user = 'root'):
@@ -95,9 +89,9 @@ def remove_store(ip, storename):
         with cd('~/OpenBazaar-Server'):
             run('python abc.py remove %s' % storename)
 
-def run_autostart_service(ip):
+def run_manager_service(ip):
     with settings(host_string=ip, user = 'root'):
-        run('sudo service openbazaar start')
+        run('sudo service openbazaar_manager restart')
 
 def stop_store(ip, storename):
     with settings(host_string=ip, user = 'root'):
@@ -119,22 +113,21 @@ droplet_region = Config.get('OPTIONAL', 'droplet_region')
 
 # get hold of the arguments
 parser = argparse.ArgumentParser()
-parser.add_argument('-n', '--num-stores', default=9)
-parser.add_argument('-u', '--username', default='user')
+parser.add_argument('-n', '--num-stores', default=4)
+parser.add_argument('-u', '--username', default='onelove')
 args = parser.parse_args()
 
 print args.num_stores
 print args.username
 
 #ip = create_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, droplet_region)
-ip = '178.62.224.220'
-install_openbazaar(ip)
-make_ob_cfg_template(ip)
+#ip = '178.62.224.220'
+ip = '178.62.228.167'
+#install_openbazaar(ip)
 copy_autobazaar_files(ip)
 for i in range(1, args.num_stores+1):
-    add_store(ip, 'store_%d' % i, args.username, generate_password(32))
-run_autostart_service(ip)
-print ip
+    add_store(ip, 'ob%d' % i, args.username, generate_password(32))
+run_manager_service(ip)
 
 # ip = '178.62.236.199'
 # copy_autobazaar_files(ip)
