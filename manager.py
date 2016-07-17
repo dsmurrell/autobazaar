@@ -35,11 +35,11 @@ def add_store(storename, username, password):
     for sn, (storenumber, un, pwd) in c.iteritems():
         store_numbers.append(storenumber)
         store_names.append(sn)
-    for n in range(1, 10): # max 9 stores per droplet
+    for n in range(1, 6): # max 5 stores per droplet (the port range goes out of bounds with 6)
         if n not in store_numbers and storename not in store_names:
             c[storename] = (n, username, password)
-            local('cp /etc/init/openbazaar_manager.conf /etc/init/openbazaar_%d.conf' % n)
-            replace('/etc/init/openbazaar_%d.conf' % n, 'exec python manager.py', 'exec python manager.py run %s' % storename)
+            local('cp /etc/init/openbazaar_template.conf /etc/init/openbazaar_%d.conf' % n)
+            replace('/etc/init/openbazaar_%d.conf' % n, '#exec_template', 'exec python manager.py run %s' % storename)
             local('sudo chmod 644 /etc/init/openbazaar_%d.conf' % n)
             save_config(c)
             return True
@@ -50,8 +50,16 @@ def remove_store(storename):
     removed = c.pop(storename, None)
     if removed:
         save_config(c)
-        local('rm /etc/init/openbazaar_%d.conf' % removed[0])
+        with settings(warn_only=True):
+            storenumber = removed[0]
+            local('rm /etc/init/openbazaar_%d.conf' % storenumber)
+            local('rm /var/log/upstart/openbazaar_%d.log' % storenumber)
     return removed
+
+def remove_all_stores():
+    abc = load_config()
+    for storename, (storenumber, username, password) in abc.iteritems():
+        remove_store(storename)
 
 def run_store(storename):
     abc = load_config()
@@ -77,34 +85,39 @@ def restart_all_stores():
 def stop_store(storename):
     abc = load_config()
     storenumber, username, password = abc[storename]
-    local('sudo service openbazaar_%d stop' % storenumber)
+    with settings(warn_only=True):
+        local('sudo service openbazaar_%d stop' % storenumber)
 
 def stop_all_stores():
     abc = load_config()
     for storename, (storenumber, username, password) in abc.iteritems():
         stop_store(storename)
 
-# no arguments restarts all the stores and keeps the manager running indefinitely
-if len(sys.argv) == 1:
-    print 'Started manager... restarting all stores...'
-    restart_all_stores()
-    while True:
-        print 'manager running...'
-        time.sleep(10)
-if sys.argv[1] == 'restart_all':
-    restart_all_stores()
-elif sys.argv[1] == 'stop_all':
-    stop_all_stores()
-elif sys.argv[1] == 'run':
+def delete_all_logs():
+    abc = load_config()
+    for storename, (storenumber, username, password) in abc.iteritems():
+        with settings(warn_only=True):
+            local('rm /var/log/upstart/openbazaar_%d.log' % storenumber)
+
+# do something based on the command line arguments
+if sys.argv[1] == 'run':
     run_store(sys.argv[2])
-elif sys.argv[1] == 'restart':
-    restart_store(sys.argv[2])
-elif sys.argv[1] == 'stop':
-    stop_store(sys.argv[2])
 elif sys.argv[1] == 'add':
     add_store(sys.argv[2], sys.argv[3], sys.argv[4])
 elif sys.argv[1] == 'remove':
     remove_store(sys.argv[2])
+elif sys.argv[1] == 'restart':
+    restart_store(sys.argv[2])
+elif sys.argv[1] == 'stop':
+    stop_store(sys.argv[2])
+elif sys.argv[1] == 'restart_all':
+    restart_all_stores()
+elif sys.argv[1] == 'stop_all':
+    stop_all_stores()
+elif sys.argv[1] == 'delete_all_logs':
+    delete_all_logs()
+elif sys.argv[1] == 'remove_all':
+    remove_all_stores()
 
         
 

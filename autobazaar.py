@@ -73,35 +73,51 @@ def install_openbazaar(ip):
 def copy_autobazaar_files(ip):
     local('scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r manager.py root@%s:~/OpenBazaar-Server/' % ip)
     local('scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r ob_template.cfg root@%s:~/OpenBazaar-Server/' % ip)
+    local('scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r openbazaar_template.conf root@%s:/etc/init/' % ip)
+
+def reset_store_config_dict(ip):
     local('scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r abc.json root@%s:~/OpenBazaar-Server/' % ip)
-    local('scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r openbazaar_manager.conf root@%s:/etc/init/' % ip)
-    with settings(host_string=ip, user = 'root'):
-        with cd('/etc/init'):
-            run('sudo chmod 644 openbazaar_manager.conf')
 
 def add_store(ip, storename, username, password):
     with settings(host_string=ip, user = 'root'):
         with cd('~/OpenBazaar-Server'):
-            run('python abc.py add %s %s %s' % (storename, username, password))
+            run('python manager.py add %s %s %s' % (storename, username, password))
 
 def remove_store(ip, storename):
     with settings(host_string=ip, user = 'root'):
         with cd('~/OpenBazaar-Server'):
-            run('python abc.py remove %s' % storename)
+            run('python manager.py remove %s' % storename)
 
-def run_manager_service(ip):
+def remove_all_stores(ip):
+    stop_all_stores(ip)
     with settings(host_string=ip, user = 'root'):
-        run('sudo service openbazaar_manager restart')
+        with cd('~/OpenBazaar-Server'):
+            run('python manager.py remove_all')
+
+def restart_store(ip, storename):
+    with settings(host_string=ip, user = 'root'):
+        with cd('~/OpenBazaar-Server'):
+            run('python manager.py restart %s' % storename)
+
+def restart_all_stores(ip):
+    with settings(host_string=ip, user = 'root'):
+        with cd('~/OpenBazaar-Server'):
+            run('python manager.py restart_all')
 
 def stop_store(ip, storename):
     with settings(host_string=ip, user = 'root'):
         with cd('~/OpenBazaar-Server'):
             run('python manager.py stop %s' % storename)
 
-def restart_store(ip, storename):
+def stop_all_stores(ip):
     with settings(host_string=ip, user = 'root'):
         with cd('~/OpenBazaar-Server'):
-            run('python manager.py restart %s' % storename)
+            run('python manager.py stop_all')
+
+def delete_all_logs(ip):
+    with settings(host_string=ip, user = 'root'):
+        with cd('~/OpenBazaar-Server'):
+            run('python manager.py delete_all_logs')
 
 # read the config file
 Config = ConfigParser.ConfigParser()
@@ -113,65 +129,22 @@ droplet_region = Config.get('OPTIONAL', 'droplet_region')
 
 # get hold of the arguments
 parser = argparse.ArgumentParser()
-parser.add_argument('-n', '--num-stores', default=4)
-parser.add_argument('-u', '--username', default='onelove')
+parser.add_argument('-n', '--num-stores', default=3)
+parser.add_argument('-u', '--username', default='fusenn')
 args = parser.parse_args()
 
 print args.num_stores
 print args.username
 
 #ip = create_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, droplet_region)
-#ip = '178.62.224.220'
-ip = '178.62.228.167'
-#install_openbazaar(ip)
+ip = 'add_your_ip_here'
+install_openbazaar(ip)
 copy_autobazaar_files(ip)
+remove_all_stores(ip)
+reset_store_config_dict(ip)
 for i in range(1, args.num_stores+1):
-    add_store(ip, 'ob%d' % i, args.username, generate_password(32))
-run_manager_service(ip)
-
-# ip = '178.62.236.199'
-# copy_autobazaar_files(ip)
-# add_store(ip, 'store_1', args.username, generate_password(32))
-# run_autostart_service(ip)
-
-
-
-#     print 'Oh Yeah! Finished installing and running OpenBazaar-Server.'
-#     print 'Please point your OpenBazaar client at IP: %s, username: %s, password: %s' % (ip_address, username, password)
-#     print 'This is done by using a regular install of OpenBazaar (found at www.openbazaar.org), and adding a new server configuration'
-#     print 'In the OpenBazaar program go to (top right of screen) menu > default > + New Server'
-#     print 'If you need to access your droplet, you can ssh in using \'ssh root@%s\'' % ip_address
-
-
-# #ip = create_and_install_digitial_ocean(digital_ocean_api_token, ssh_key, droplet_name, droplet_region)
-
-# ip = '188.166.19.231'
-# print ip
-# copy_autobazaar_files(ip)
-# add_store(ip, 'purechimp', 'daniel', generate_password(32))
-# add_store(ip, 'autobazaar', 'daniel', generate_password(32))
-# add_store(ip, 'dan', 'daniel', generate_password(32))
-
-# ip = '178.62.228.167'
-# print ip
-# install_openbazaar(ip)
-# copy_autobazaar_files(ip)
-# make_ob_cfg_template(ip)
-# add_store(ip, 'ob1', 'onelove', generate_password(32))
-# add_store(ip, 'ob2', 'onelove', generate_password(32))
-# add_store(ip, 'ob3', 'onelove', generate_password(32))
-# add_store(ip, 'ob4', 'onelove', generate_password(32))
-# add_and_run_autostart_service(ip)
-
-
-
-# add_store('188.166.19.231', 'purechimp', 'daniel', generate_password(32))
-# add_store('188.166.19.231', 'autobazaar', 'daniel', generate_password(32))
-# add_store('188.166.19.231', 'dan', 'daniel', generate_password(32))
-
-#add_and_run_autostart_service('188.166.19.231')
-
-#restart_store('188.166.19.231', 'autobazaar')
+    add_store(ip, 'store_%d' % i, args.username, generate_password(32))
+restart_all_stores(ip)
 
 
 
