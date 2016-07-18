@@ -140,7 +140,7 @@ print args.username
 ip = 'add_your_ip_here'
 install_openbazaar(ip)
 copy_autobazaar_files(ip)
-remove_all_stores(ip)
+#remove_all_stores(ip)
 reset_store_config_dict(ip)
 for i in range(1, args.num_stores+1):
     add_store(ip, 'store_%d' % i, args.username, generate_password(32))
