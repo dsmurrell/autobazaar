@@ -73,10 +73,13 @@ def install_openbazaar(ip):
 def copy_autobazaar_files(ip):
     local('scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r manager.py root@%s:~/OpenBazaar-Server/' % ip)
     local('scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r ob_template.cfg root@%s:~/OpenBazaar-Server/' % ip)
-    local('scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r openbazaar_template.conf root@%s:/etc/init/' % ip)
-
-def reset_store_config_dict(ip):
+    local('scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r openbazaar_upstart root@%s:/etc/init/' % ip)
     local('scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r abc.json root@%s:~/OpenBazaar-Server/' % ip)
+
+def copy_autobazaar_files_without_config_dict(ip):
+    local('scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r manager.py root@%s:~/OpenBazaar-Server/' % ip)
+    local('scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r ob_template.cfg root@%s:~/OpenBazaar-Server/' % ip)
+    local('scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r openbazaar_upstart root@%s:/etc/init/' % ip)
 
 def add_store(ip, storename, username, password):
     with settings(host_string=ip, user = 'root'):
@@ -129,22 +132,21 @@ droplet_region = Config.get('OPTIONAL', 'droplet_region')
 
 # get hold of the arguments
 parser = argparse.ArgumentParser()
+parser.add_argument('-u', '--username', default='user')
 parser.add_argument('-n', '--num-stores', default=3)
-parser.add_argument('-u', '--username', default='fusenn')
 args = parser.parse_args()
+args.num_stores = int(args.num_stores)
+print 'Creating %d stores on a Digital Ocean droplet with username: %s.' % (args.num_stores, args.username)
 
-print args.num_stores
-print args.username
+def setup_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, droplet_region, username, num_stores):
+    ip = create_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, droplet_region)
+    install_openbazaar(ip)
+    copy_autobazaar_files(ip)
+    for i in range(1, args.num_stores+1):
+        add_store(ip, 'store_%d' % i, args.username, generate_password(32))
+    restart_all_stores(ip)
 
-#ip = create_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, droplet_region)
-ip = 'add_your_ip_here'
-install_openbazaar(ip)
-copy_autobazaar_files(ip)
-#remove_all_stores(ip)
-reset_store_config_dict(ip)
-for i in range(1, args.num_stores+1):
-    add_store(ip, 'store_%d' % i, args.username, generate_password(32))
-restart_all_stores(ip)
+setup_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, droplet_region, args.username, args.num_stores)
 
 
 

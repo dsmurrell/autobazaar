@@ -5,12 +5,11 @@
 # Usage: "sudo service openbazaar start"
 
 description "OpenBazaar Server"
-author "Daniel Murrell"
 
 start on runlevel [2345]
 stop on starting rc RUNLEVEL=[016]
 
-chdir /root/OpenBazaar-Server 
+chdir /root/OpenBazaar-Server
 
 setuid root
 setgid root
@@ -21,4 +20,4 @@ kill timeout 20
 
 console log
 
-#exec_template
+exec python openbazaard.py start -a 0.0.0.0

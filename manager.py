@@ -38,8 +38,8 @@ def add_store(storename, username, password):
     for n in range(1, 6): # max 5 stores per droplet (the port range goes out of bounds with 6)
         if n not in store_numbers and storename not in store_names:
             c[storename] = (n, username, password)
-            local('cp /etc/init/openbazaar_template.conf /etc/init/openbazaar_%d.conf' % n)
-            replace('/etc/init/openbazaar_%d.conf' % n, '#exec_template', 'exec python manager.py run %s' % storename)
+            local('cp /etc/init/openbazaar_upstart /etc/init/openbazaar_%d.conf' % n)
+            replace('/etc/init/openbazaar_%d.conf' % n, 'exec python openbazaard.py start -a 0.0.0.0', 'exec python manager.py run %s' % storename)
             local('sudo chmod 644 /etc/init/openbazaar_%d.conf' % n)
             save_config(c)
             return True
