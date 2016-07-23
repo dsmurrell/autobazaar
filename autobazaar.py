@@ -38,7 +38,7 @@ def create_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name,
         if status == 'completed':
             droplet.load()
             sys.stdout.write('\nWaiting for network services to become available .')
-            for i in range(20):
+            for i in range(30):
                 time.sleep(1)
                 sys.stdout.write('.'); sys.stdout.flush()
             print ''
@@ -73,13 +73,23 @@ def install_openbazaar(ip):
 def copy_autobazaar_files(ip):
     local('scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r manager.py root@%s:~/OpenBazaar-Server/' % ip)
     local('scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r ob_template.cfg root@%s:~/OpenBazaar-Server/' % ip)
-    local('scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r openbazaar_upstart root@%s:/etc/init/' % ip)
     local('scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r abc.json root@%s:~/OpenBazaar-Server/' % ip)
+    local('scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r openbazaar.conf root@%s:/etc/init/' % ip)
+    with settings(host_string=ip, user = 'root', warn_only=True):
+        with cd('~'):
+            run('mkdir logs')
+        with cd('/etc/init'):
+            run('sudo chmod 644 openbazaar.conf')
 
 def copy_autobazaar_files_without_config_dict(ip):
     local('scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r manager.py root@%s:~/OpenBazaar-Server/' % ip)
     local('scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r ob_template.cfg root@%s:~/OpenBazaar-Server/' % ip)
-    local('scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r openbazaar_upstart root@%s:/etc/init/' % ip)
+    local('scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r openbazaar.conf root@%s:/etc/init/' % ip)
+    with settings(host_string=ip, user = 'root', warn_only=True):
+        with cd('~'):
+            run('mkdir logs')
+        with cd('/etc/init'):
+            run('sudo chmod 644 openbazaar.conf')
 
 def add_store(ip, storename, username, password):
     with settings(host_string=ip, user = 'root'):
@@ -122,6 +132,11 @@ def delete_all_logs(ip):
         with cd('~/OpenBazaar-Server'):
             run('python manager.py delete_all_logs')
 
+def spawn_manage(ip):
+    with settings(host_string=ip, user = 'root'):
+        with cd('~/OpenBazaar-Server'):
+            run('python manager.py spawn_manage')
+
 # read the config file
 Config = ConfigParser.ConfigParser()
 Config.read('ab.cfg')
@@ -133,7 +148,7 @@ droplet_region = Config.get('OPTIONAL', 'droplet_region')
 # get hold of the arguments
 parser = argparse.ArgumentParser()
 parser.add_argument('-u', '--username', default='user')
-parser.add_argument('-n', '--num-stores', default=3)
+parser.add_argument('-n', '--num-stores', default=5)
 args = parser.parse_args()
 args.num_stores = int(args.num_stores)
 print 'Creating %d stores on a Digital Ocean droplet with username: %s.' % (args.num_stores, args.username)
@@ -142,11 +157,35 @@ def setup_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, 
     ip = create_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, droplet_region)
     install_openbazaar(ip)
     copy_autobazaar_files(ip)
+    passwords = []
     for i in range(1, args.num_stores+1):
-        add_store(ip, 'store_%d' % i, args.username, generate_password(32))
-    restart_all_stores(ip)
+        passwords.append(generate_password(32))
+        add_store(ip, 'store_%d' % i, args.username, passwords[i-1])
+    spawn_manage(ip)
+    print 'Oh Yeah! Finished installing and running your OpenBazaar stores.'
+    print 'If you restart your droplet all your stores will respawn.'
+    print 'Now you can connect OpenBazaar (found at www.openbazaar.org) to your stores in the cloud by adding new server configurations as follows:'
+    print 'In the OpenBazaar program go to menu (top right of screen) -> default -> + New Server\n'
+    for i in range(args.num_stores):
+        num = i+1
+        print 'For store #%d, please use the following configurations options:' % num
+        hap = str(num) + '8469'
+        wap = str(num) + '8466'
+        hsp = str(num) + '8470'
+        print '\tServer IP: %s\n\tUsername: %s\n\tPassword: %s\n\tRest API Port: %s\n\tWebsocket API port: %s\n\tHeartbeat socket port: %s\n' % (ip, username, passwords[i], hap, wap, hsp)
+    print 'If you need to access your droplet to make any changes manually, you can ssh in using \'ssh root@%s\'' % ip
 
-setup_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, droplet_region, args.username, args.num_stores)
+#setup_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, droplet_region, args.username, args.num_stores)
+
+ip = '178.62.252.169'
+stop_all_stores(ip)
+copy_autobazaar_files(ip)
+passwords = []
+for i in range(1, args.num_stores+1):
+    passwords.append(generate_password(32))
+    add_store(ip, 'store_%d' % i, args.username, passwords[i-1])
+spawn_manage(ip)
+
 
 
 

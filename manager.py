@@ -38,9 +38,6 @@ def add_store(storename, username, password):
     for n in range(1, 6): # max 5 stores per droplet (the port range goes out of bounds with 6)
         if n not in store_numbers and storename not in store_names:
             c[storename] = (n, username, password)
-            local('cp /etc/init/openbazaar_upstart /etc/init/openbazaar_%d.conf' % n)
-            replace('/etc/init/openbazaar_%d.conf' % n, 'exec python openbazaard.py start -a 0.0.0.0', 'exec python manager.py run %s' % storename)
-            local('sudo chmod 644 /etc/init/openbazaar_%d.conf' % n)
             save_config(c)
             return True
     return False
@@ -50,10 +47,6 @@ def remove_store(storename):
     removed = c.pop(storename, None)
     if removed:
         save_config(c)
-        with settings(warn_only=True):
-            storenumber = removed[0]
-            local('rm /etc/init/openbazaar_%d.conf' % storenumber)
-            local('rm /var/log/upstart/openbazaar_%d.log' % storenumber)
     return removed
 
 def remove_all_stores():
@@ -61,7 +54,8 @@ def remove_all_stores():
     for storename, (storenumber, username, password) in abc.iteritems():
         remove_store(storename)
 
-def run_store(storename):
+def restart_store(storename):
+    print 'Restarting store %s.' % storename
     abc = load_config()
     storenumber, username, password = abc[storename]
     with cd('~/OpenBazaar-Server'):
@@ -69,24 +63,27 @@ def run_store(storename):
         replace('ob.cfg', '#USERNAME = username', 'USERNAME = %s' % username)
         replace('ob.cfg', '#PASSWORD = password', 'PASSWORD = %s' % password)
         replace('ob.cfg', '#DATA_FOLDER = /path/to/OpenBazaar/', 'DATA_FOLDER = /root/stores/%s/' % storename)
-        local('python openbazaard.py start -p 1111%d -r %d8469 -w %d8466 -b %d8470 --pidfile %s.pid -a 0.0.0.0' % (storenumber, storenumber, storenumber, storenumber, storename))
-
-def restart_store(storename):
-    abc = load_config()
-    storenumber, username, password = abc[storename]
-    local('sudo service openbazaar_%d restart' % storenumber)
+        try:
+            local("screen -S %s -X stuff $'\003'" % storename)
+            time.sleep(10)
+        except:
+            pass
+        local('echo \'logfile ../logs/%s.log\' > ~/.screenrc' % storename)
+        local('screen -d -m -S %s -L python openbazaard.py start -p 1111%d -r %d8469 -w %d8466 -b %d8470 --pidfile %s.pid -a 0.0.0.0; sleep 1' % (storename, storenumber, storenumber, storenumber, storenumber, storename))
 
 def restart_all_stores():
     abc = load_config()
     for storename, (storenumber, username, password) in abc.iteritems():
         restart_store(storename)
-        time.sleep(10)
 
 def stop_store(storename):
     abc = load_config()
     storenumber, username, password = abc[storename]
-    with settings(warn_only=True):
-        local('sudo service openbazaar_%d stop' % storenumber)
+    try:
+        local("screen -S %s -X stuff $'\003'" % storename)
+        time.sleep(10)
+    except:
+        pass
 
 def stop_all_stores():
     abc = load_config()
@@ -97,11 +94,29 @@ def delete_all_logs():
     abc = load_config()
     for storename, (storenumber, username, password) in abc.iteritems():
         with settings(warn_only=True):
-            local('rm /var/log/upstart/openbazaar_%d.log' % storenumber)
+            with cd('~/logs'):
+                local('rm %s.log' % storename)
+
+def manage():
+    print 'Started manager... restarting all stores.'
+    restart_all_stores()
+    abc = load_config()
+    total_time = 21600 # 6 hours in seconds
+    one_time = total_time / len(abc)
+    while True:
+        for storename, (storenumber, username, password) in abc.iteritems():
+            time.sleep(one_time)
+            restart_store(storename)
 
 # do something based on the command line arguments
-if sys.argv[1] == 'run':
-    run_store(sys.argv[2])
+if sys.argv[1] == 'spawn_manage':
+    with settings(warn_only=True):
+        with cd('~/OpenBazaar-Server'):
+            local('screen -X -S manage quit')
+            local('echo \'logfile ../logs/manage.log\' > ~/.screenrc')
+            local('screen -d -m -S manage -L python manager.py manage; sleep 1')
+if sys.argv[1] == 'manage':
+    manage()
 elif sys.argv[1] == 'add':
     add_store(sys.argv[2], sys.argv[3], sys.argv[4])
 elif sys.argv[1] == 'remove':
