@@ -2,7 +2,7 @@ NB. Windows users: this may or may not work from Windows. I've not been able to 
 
 # autobazaar
 
-A tool to install the OpenBazaar Server in the cloud ([Digital Ocean](https://m.do.co/c/ae523dc7d5e4) for starters). This tool lets you bypass the installation tedium and allows you to run a permanently online store on Digital Ocean's cheapest droplet at $5 a month. The installation process should take somewhere between 8 and 11 minutes. The tool creates the droplet for you, logs on and installs and runs the OpenBazaar-Server, and sets up an init script which will lauch the server if your computer reboots for whatever reason.
+A tool to install the OpenBazaar Server in the cloud ([Digital Ocean](https://m.do.co/c/ae523dc7d5e4) for starters). This tool lets you bypass the installation tedium and allows you to run a number of permanently online stores on Digital Ocean's cheapest droplet at $5 a month. The installation process should take somewhere between 8 and 11 minutes. The tool creates the droplet for you, logs on and installs and runs the OpenBazaar servers. It also creates upstart scripts which will lauch the servers if your computer reboots or your servers crash for whatever reason.
 
 *authored by* Daniel Murrell of [duosear.ch](https://duosear.ch)
 
@@ -18,27 +18,25 @@ Follow the numbered steps below. If you encounter any errors see the 'potential 
   cd autobazaar
   ```
 
-3. Edit the `ab.cfg` file and set up 4 mandatory inputs for autobazaar. 
+3. Edit the `ab.cfg` file and set up 2 mandatory inputs for autobazaar. 
   - Your write access enabled Digital Ocean API token which can be generated from [Digital Ocean](https://cloud.digitalocean.com/settings/api/tokens)
   - Your public ssh key. If it already exists, you can find it using `at ~/.ssh/id_rsa.pub`. If it does not exist, you can generate an ssh key pair using the following command: `ssh-keygen -t rsa -C 'your_email@example.com'`
-  - The OpenBazaar-Server username you desire
-  - The OpenBazaar-Server password you desire
 
 4. Install autobazaar's dependencies and run it by typing the following two lines in the terminal:
   ```
   pip install -r requirements.txt
-  python spin.py
+  python autobazaar.py -n num_stores -u username
   ```
-  The spin script should run for between 8 and 11 minutes and when it's done, it will print out the IP address, username and password to configure a new server connection.
+  Where `num_stores` is the number of OpenBazaar stores you want to run (5 or less) and `username` is the username that you use to log into them. The `autobazaar.py` script should run for between 8 and 11 minutes and when it's done, it will print out the IP address, usernames and passwords to configure a new server connections.
   
-5. Set up the new server configuration. If you don't have OpenBazaar you can obtain it from www.openbazaar.org. Once OpenBazaar is installed, add a new server configuration by navigating (top right of screen) menu > default > + New Server and entering the IP address, username and password obtained in the previous step.
+5. Set up new server configurations. If you don't have OpenBazaar you can obtain it from www.openbazaar.org. Once OpenBazaar is installed, add new server configurations by navigating (top right of screen) menu > default > + New Server and entering the IP address, usernames and passwords obtained in the previous step.
 
-6. [Optional] For vendors with existing stores who want to move their store over to the droplet, you can replace the contents of ~/.openbazaar on the droplet with the contents of your database folder on your computer. The database folder can be found in:
+6. [Optional] For vendors with existing stores who want to move their store over to the droplet, you can replace the contents of the folders in the `~/store` folder on the droplet with the contents of your database folder on your computer. The database folder can be found in:
   - Window: C:\Users\Username\AppData\Roaming\openbazaar 
   - Linux: ~/.openbazaar
   - OSX: ~/Library/Application Support/OpenBazaar
 
-  Since your public ssh key is already on the droplet, `ssh root@droplet_ip` should ssh you in and you can use `scp` to carry out the transfer. Remember to restart the OpenBazaar server once you have copied the contents over. Restarting the server is most easily done by rebooting the droplet. This can be done using through [Digital Ocean](https://m.do.co/c/ae523dc7d5e4) or by sshing in and using the `reboot` command.
+  Since your public ssh key is already on the droplet, `ssh root@droplet_ip` should ssh you in and you can use `scp` to carry out the transfer. Remember to restart the OpenBazaar server once you have copied the contents over. Restarting the server is most easily done by rebooting the droplet. This can be done using through [Digital Ocean](https://m.do.co/c/ae523dc7d5e4) or by sshing in and using the `sudo reboot` command.
 
 any questions? email me at `dsmurrell at gmail dot com`. 
 
