@@ -27,7 +27,7 @@ Follow the numbered steps below. If you encounter any errors see the 'potential 
   pip install -r requirements.txt
   python autobazaar.py -n num_stores -u username
   ```
-  Where `num_stores` is the number of OpenBazaar stores you want to run (5 or less) and `username` is the username that you use to log into them. The `autobazaar.py` script should run for between 8 and 11 minutes and when it's done, it will print out the IP address, usernames and passwords to configure a new server connections.
+  Where `num_stores` is the number of OpenBazaar stores you want to run (5 or less) and `username` is the username that you use to log into them. The `autobazaar.py` script should run for between 8 and 11 minutes and when it's done, it will print out the IP address, usernames and passwords to configure the new server connections.
   
 5. Set up new server configurations. If you don't have OpenBazaar you can obtain it from www.openbazaar.org. Once OpenBazaar is installed, add new server configurations by navigating (top right of screen) menu > default > + New Server and entering the IP address, usernames and passwords obtained in the previous step.
 
