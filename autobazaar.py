@@ -175,16 +175,7 @@ def setup_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, 
         print '\tServer IP: %s\n\tUsername: %s\n\tPassword: %s\n\tRest API Port: %s\n\tWebsocket API port: %s\n\tHeartbeat socket port: %s\n' % (ip, username, passwords[i], hap, wap, hsp)
     print 'If you need to access your droplet to make any changes manually, you can ssh in using \'ssh root@%s\'' % ip
 
-#setup_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, droplet_region, args.username, args.num_stores)
-
-ip = '178.62.252.169'
-stop_all_stores(ip)
-copy_autobazaar_files(ip)
-passwords = []
-for i in range(1, args.num_stores+1):
-    passwords.append(generate_password(32))
-    add_store(ip, 'store_%d' % i, args.username, passwords[i-1])
-spawn_manage(ip)
+setup_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, droplet_region, args.username, args.num_stores)
 
 
 
