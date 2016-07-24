@@ -151,7 +151,7 @@ parser.add_argument('-u', '--username', default='user')
 parser.add_argument('-n', '--num-stores', default=5)
 args = parser.parse_args()
 args.num_stores = int(args.num_stores)
-print 'Creating %d stores on a Digital Ocean droplet with username: %s.' % (args.num_stores, args.username)
+print 'Creating %d stores on a Digital Ocean droplet.' % args.num_stores
 
 def setup_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, droplet_region, username, num_stores):
     ip = create_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, droplet_region)
