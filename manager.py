@@ -5,6 +5,9 @@ from tempfile import mkstemp
 from shutil import move
 from os import remove, close
 import json
+import twisted.internet
+from twisted.internet import reactor, task
+from subprocess import check_output
 
 def save_config(config_dict):
     with open('/root/OpenBazaar-Server/abc.json', 'w') as f:
@@ -97,16 +100,38 @@ def delete_all_logs():
             with cd('~/logs'):
                 local('rm %s.log' % storename)
 
+def screen_running(name):
+        var = check_output(["screen -ls; true"],shell=True)
+        if "."+name+"\t(" in var:
+            return True
+        else:
+            return False
+
+def maintain():
+    abc = load_config()
+    for storename in abc.keys():
+        if not screen_running(storename):
+            print 'Store %s went down... restarting...' % storename
+            restart_store(storename)
+
+def loop_restart_store(storename, interval):
+    print 'loop restart store: %s, %s' % (storename, interval)
+    task.LoopingCall(restart_store, storename).start(interval)
+
 def manage():
     print 'Started manager... restarting all stores.'
     restart_all_stores()
+
+    # handle the restarting of stores
     abc = load_config()
-    total_time = 21600 # 6 hours in seconds
-    one_time = total_time / len(abc)
-    while True:
-        for storename, (storenumber, username, password) in abc.iteritems():
-            time.sleep(one_time)
-            restart_store(storename)
+    interval = 3600 # 1 hour in seconds
+    int_frac = interval / len(abc)
+    for i, storename in enumerate(abc.keys()):
+        reactor.callLater((i * int_frac) + int_frac, loop_restart_store, storename, interval)
+
+    # restart stores that have gone down
+    task.LoopingCall(maintain).start(5, now=False)
+    twisted.internet.reactor.run()
 
 # do something based on the command line arguments
 if sys.argv[1] == 'spawn_manage':
