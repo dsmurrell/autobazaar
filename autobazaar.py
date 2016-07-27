@@ -11,7 +11,7 @@ import pip
 # exit if python version 3
 python_version = sys.version_info.major
 if python_version == 3:
-    print("Python version is 3.X... this tool only works with python versions 2.X. Please rerun using python 2.X.")
+    print('Python version is 3.X... this tool only works with python versions 2.X. Please rerun using python 2.X.')
     sys.exit()
 
 pip.main(['install', 'python-digitalocean'])
@@ -22,7 +22,7 @@ def create_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name,
     droplets = manager.get_all_droplets()
     for droplet in droplets:
         if droplet.name == droplet_name:
-            print 'You already have droplet with name: %s, Shutting down.' % droplet_name
+            print('You already have droplet with name: %s, Shutting down.' % droplet_name)
             return False
 
     droplet = digitalocean.Droplet(token=digital_ocean_api_token,
@@ -33,7 +33,7 @@ def create_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name,
                                    size_slug='512mb',  
                                    backups=False)
 
-    print 'Creating OpenBazaar-Server droplet on Digital Ocean.'
+    print('Creating OpenBazaar-Server droplet on Digital Ocean.')
     droplet.create()
 
     # check on the status of the droplet and wait for it to become available
@@ -51,13 +51,13 @@ def create_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name,
             for i in range(30):
                 time.sleep(1)
                 sys.stdout.write('.'); sys.stdout.flush()
-            print ''
+            print('')
             break
-    print 'OpenBazaar-Server droplet created with IP: ' + droplet.ip_address
+    print('OpenBazaar-Server droplet created with IP: ' + droplet.ip_address)
     return droplet.ip_address
 
 def install_openbazaar(ip):
-    print 'Installing OpenBazaar-Server and dependencies'
+    print('Installing OpenBazaar-Server and dependencies')
     with settings(host_string=ip, user = 'root'):
 
         run('sudo add-apt-repository -y ppa:chris-lea/libsodium')
@@ -78,7 +78,7 @@ def install_openbazaar(ip):
     for i in range(10):
         time.sleep(1)
         sys.stdout.write('.'); sys.stdout.flush()
-    print ''
+    print('')
 
 def copy_autobazaar_files(ip):
     local('scp -q -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -r manager.py root@%s:~/OpenBazaar-Server/' % ip)
@@ -155,21 +155,21 @@ def setup_server(ip, username, num_stores):
         passwords.append(generate_password(32))
         add_store(ip, 'store_%d' % i, args.username, passwords[i-1])
     spawn_manage(ip)
-    print 'Oh Yeah! Finished installing and running your OpenBazaar stores.'
-    print 'If you restart your droplet all your stores will respawn.'
-    print 'Now you can connect OpenBazaar (found at www.openbazaar.org) to your stores in the cloud by adding new server configurations as follows:'
-    print 'In the OpenBazaar program go to menu (top right of screen) -> default -> + New Server\n'
+    print('Oh Yeah! Finished installing and running your OpenBazaar stores.')
+    print('If you restart your droplet all your stores will respawn.')
+    print('Now you can connect OpenBazaar (found at www.openbazaar.org) to your stores in the cloud by adding new server configurations as follows:')
+    print('In the OpenBazaar program go to menu (top right of screen) -> default -> + New Server\n')
     for i in range(args.num_stores):
         num = i+1
-        print 'For store #%d, please use the following configurations options:' % num
+        print('For store #%d, please use the following configurations options:' % num)
         hap = str(num) + '8469'
         wap = str(num) + '8466'
         hsp = str(num) + '8470'
-        print '\tServer IP: %s\n\tUsername: %s\n\tPassword: %s\n\tRest API Port: %s\n\tWebsocket API port: %s\n\tHeartbeat socket port: %s\n' % (ip, username, passwords[i], hap, wap, hsp)
-    print 'If you need to access your droplet to make any changes manually, you can ssh in using \'ssh root@%s\'' % ip
+        print('\tServer IP: %s\n\tUsername: %s\n\tPassword: %s\n\tRest API Port: %s\n\tWebsocket API port: %s\n\tHeartbeat socket port: %s\n' % (ip, username, passwords[i], hap, wap, hsp))
+    print('If you need to access your droplet to make any changes manually, you can ssh in using \'ssh root@%s\'' % ip)
 
 def setup_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, droplet_region, username, num_stores):
-    print 'Creating %d stores on a Digital Ocean droplet.' % num_stores
+    print('Creating %d stores on a Digital Ocean droplet.' % num_stores)
     ip = create_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, droplet_region)
     setup_server(ip, username, num_stores)
 
