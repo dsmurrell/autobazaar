@@ -1,21 +1,24 @@
-import sys, time
-import digitalocean
-from fabric.api import *
-import datetime
-import ConfigParser
-from password import generate_password
-import json
-import argparse
+import sys
 import pip
- 
-# exit if python version 3
-python_version = sys.version_info.major
-if python_version == 3:
-    print('Python version is 3.X... this tool only works with python versions 2.X. Please rerun using python 2.X.')
-    sys.exit()
+
+# # exit if python version 3
+# python_version = sys.version_info.major
+# if python_version == 3:
+#     print('Python version is 3.X... this tool only works with python versions 2.X. Please rerun using python 2.X.')
+#     sys.exit()
 
 pip.main(['install', 'python-digitalocean'])
 pip.main(['install', 'fabric'])
+pip.main(['install', 'configparser'])
+
+import time
+import digitalocean
+from fabric.api import *
+import datetime
+import configparser
+from password import generate_password
+import json
+import argparse
 
 def create_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, droplet_region):
     manager = digitalocean.Manager(token=digital_ocean_api_token)
@@ -176,7 +179,7 @@ def setup_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, 
 # get hold of the arguments
 parser = argparse.ArgumentParser()
 parser.add_argument('-u', '--username', default='user')
-parser.add_argument('-n', '--num-stores', type=int, default=5, choices=xrange(1, 6))
+parser.add_argument('-n', '--num-stores', type=int, default=5, choices=range(1, 6))
 parser.add_argument('-hs', '--hosting-service', default='DigitalOcean', choices=['None', 'DigitalOcean'])
 parser.add_argument('-ip', '--ip-address', default='')
 args = parser.parse_args()
@@ -185,7 +188,7 @@ if args.hosting_service == 'None':
     setup_server(args.ip_address, args.username, args.num_stores)
 
 elif args.hosting_service == 'DigitalOcean':
-    Config = ConfigParser.ConfigParser()
+    Config = configparser.ConfigParser()
     Config.read('ab.cfg')
     digital_ocean_api_token = Config.get('MANDATORY', 'digital_ocean_api_token')
     ssh_key = Config.get('MANDATORY', 'ssh_key')
