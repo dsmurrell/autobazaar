@@ -1,12 +1,6 @@
 import sys
 import pip
 
-# # exit if python version 3
-# python_version = sys.version_info.major
-# if python_version == 3:
-#     print('Python version is 3.X... this tool only works with python versions 2.X. Please rerun using python 2.X.')
-#     sys.exit()
-
 pip.main(['install', 'python-digitalocean'])
 pip.main(['install', 'fabric'])
 pip.main(['install', 'configparser'])
@@ -19,6 +13,14 @@ import configparser
 from password import generate_password
 import json
 import argparse
+
+# exit if python version 3
+python_version = sys.version_info.major
+if python_version == 3:
+    import configparser
+else:
+    import ConfigParser
+
 
 def create_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, droplet_region):
     manager = digitalocean.Manager(token=digital_ocean_api_token)
