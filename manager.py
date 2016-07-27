@@ -71,7 +71,7 @@ def restart_store(storename):
             time.sleep(10)
         except:
             pass
-        local('echo \'logfile ../logs/%s.log\' > ~/.screenrc' % storename)
+        local('echo \'logfile /root/logs/%s.log\' > /root/.screenrc' % storename)
         local('screen -d -m -S %s -L python openbazaard.py start -p 1111%d -r %d8469 -w %d8466 -b %d8470 --pidfile %s.pid -a 0.0.0.0; sleep 1' % (storename, storenumber, storenumber, storenumber, storenumber, storename))
 
 def restart_all_stores():
@@ -118,6 +118,9 @@ def loop_restart_store(storename, interval):
     print 'loop restart store: %s, %s' % (storename, interval)
     task.LoopingCall(restart_store, storename).start(interval)
 
+def loop_maintain(interval):
+    task.LoopingCall(maintain).start(interval)
+
 def manage():
     print 'Started manager... restarting all stores.'
     restart_all_stores()
@@ -130,7 +133,7 @@ def manage():
         reactor.callLater((i * int_frac) + int_frac, loop_restart_store, storename, interval)
 
     # restart stores that have gone down
-    task.LoopingCall(maintain).start(5, now=False)
+    reactor.callLater(60, loop_maintain, 5)
     twisted.internet.reactor.run()
 
 # do something based on the command line arguments
@@ -138,7 +141,7 @@ if sys.argv[1] == 'spawn_manage':
     with settings(warn_only=True):
         with cd('~/OpenBazaar-Server'):
             local('screen -X -S manage quit')
-            local('echo \'logfile ../logs/manage.log\' > ~/.screenrc')
+            local('echo \'logfile /root/logs/manage.log\' > /root/.screenrc')
             local('screen -d -m -S manage -L python manager.py manage; sleep 1')
 if sys.argv[1] == 'manage':
     manage()

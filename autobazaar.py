@@ -6,6 +6,16 @@ import ConfigParser
 from password import generate_password
 import json
 import argparse
+import pip
+ 
+# exit if python version 3
+python_version = sys.version_info.major
+if python_version == 3:
+    print("Python version is 3.X... this tool only works with python versions 2.X. Please rerun using python 2.X.")
+    sys.exit()
+
+pip.main(['install', 'python-digitalocean'])
+pip.main(['install', 'fabric'])
 
 def create_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, droplet_region):
     manager = digitalocean.Manager(token=digital_ocean_api_token)
@@ -137,24 +147,7 @@ def spawn_manage(ip):
         with cd('~/OpenBazaar-Server'):
             run('python manager.py spawn_manage')
 
-# read the config file
-Config = ConfigParser.ConfigParser()
-Config.read('ab.cfg')
-digital_ocean_api_token = Config.get('MANDATORY', 'digital_ocean_api_token')
-ssh_key = Config.get('MANDATORY', 'ssh_key')
-droplet_name = Config.get('OPTIONAL', 'droplet_name')
-droplet_region = Config.get('OPTIONAL', 'droplet_region')
-
-# get hold of the arguments
-parser = argparse.ArgumentParser()
-parser.add_argument('-u', '--username', default='user')
-parser.add_argument('-n', '--num-stores', default=5)
-args = parser.parse_args()
-args.num_stores = int(args.num_stores)
-print 'Creating %d stores on a Digital Ocean droplet.' % args.num_stores
-
-def setup_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, droplet_region, username, num_stores):
-    ip = create_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, droplet_region)
+def setup_server(ip, username, num_stores):
     install_openbazaar(ip)
     copy_autobazaar_files(ip)
     passwords = []
@@ -175,7 +168,31 @@ def setup_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, 
         print '\tServer IP: %s\n\tUsername: %s\n\tPassword: %s\n\tRest API Port: %s\n\tWebsocket API port: %s\n\tHeartbeat socket port: %s\n' % (ip, username, passwords[i], hap, wap, hsp)
     print 'If you need to access your droplet to make any changes manually, you can ssh in using \'ssh root@%s\'' % ip
 
-setup_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, droplet_region, args.username, args.num_stores)
+def setup_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, droplet_region, username, num_stores):
+    print 'Creating %d stores on a Digital Ocean droplet.' % num_stores
+    ip = create_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, droplet_region)
+    setup_server(ip, username, num_stores)
+
+# get hold of the arguments
+parser = argparse.ArgumentParser()
+parser.add_argument('-u', '--username', default='user')
+parser.add_argument('-n', '--num-stores', type=int, default=5, choices=xrange(1, 6))
+parser.add_argument('-hs', '--hosting-service', default='DigitalOcean', choices=['None', 'DigitalOcean'])
+parser.add_argument('-ip', '--ip-address', default='')
+args = parser.parse_args()
+
+if args.hosting_service == 'None':
+    setup_server(args.ip_address, args.username, args.num_stores)
+
+elif args.hosting_service == 'DigitalOcean':
+    Config = ConfigParser.ConfigParser()
+    Config.read('ab.cfg')
+    digital_ocean_api_token = Config.get('MANDATORY', 'digital_ocean_api_token')
+    ssh_key = Config.get('MANDATORY', 'ssh_key')
+    droplet_name = Config.get('OPTIONAL', 'droplet_name')
+    droplet_region = Config.get('OPTIONAL', 'droplet_region')
+    setup_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, droplet_region, args.username, args.num_stores)
+
 
 
 
