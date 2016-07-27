@@ -22,8 +22,9 @@ Follow the numbered steps below. If you encounter any errors see the 'potential 
   - Your write access enabled Digital Ocean API token which can be generated from [Digital Ocean](https://cloud.digitalocean.com/settings/api/tokens)
   - Your public ssh key. If it already exists, you can find it using `cat ~/.ssh/id_rsa.pub`. If it does not exist, you can generate an ssh key pair using the following command: `ssh-keygen -t rsa`
 
-4. Run autobazaar by typing the following line in the terminal:
+4.  Install python-pip and run autobazaar by typing the following line in the terminal, this example shows how you install python-pip on linux:
   ```
+  sudo apt-get install python-pip
   python autobazaar.py -n num_stores -u username
   ```
   Where `num_stores` is the number of OpenBazaar stores you want to run (5 or less) and `username` is the username that you use to log into them. The `autobazaar.py` script should run for between 8 and 11 minutes and when it's done, it will print out the IP address, usernames and passwords to configure the new server connections.
