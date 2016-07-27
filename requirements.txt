@@ -1,2 +1,0 @@
-python-digitalocean==1.8.1
-fabric==1.11.1

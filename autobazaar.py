@@ -4,6 +4,7 @@ import pip
 pip.main(['install', 'python-digitalocean'])
 pip.main(['install', 'fabric'])
 pip.main(['install', 'configparser'])
+pip.main(['install', 'ConfigParser'])
 
 import time
 import digitalocean
