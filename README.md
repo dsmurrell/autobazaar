@@ -4,6 +4,8 @@ NB. Windows users: this may or may not work from Windows. I've not been able to 
 
 A tool to install the OpenBazaar Server in the cloud ([Digital Ocean](https://m.do.co/c/ae523dc7d5e4) for starters). This tool lets you bypass the installation tedium and allows you to run a number of permanently online stores on Digital Ocean's cheapest droplet at $5 a month. The installation process should take somewhere between 8 and 11 minutes. The tool creates the droplet for you, logs on and installs and runs the OpenBazaar servers. It also creates upstart scripts which will lauch the servers if your computer reboots or your servers crash for whatever reason.
 
+Right now there is a bug which prevents you from switching between multiple OpenBazaar servers running on the same machine so the number of stores this tool creates is set to a default of 1 until this bug is resolved.
+
 *authored by* Daniel Murrell of [duosear.ch](https://duosear.ch)
 
 ## usage instructions
@@ -27,7 +29,7 @@ Follow the numbered steps below. If you encounter any errors see the 'potential 
   sudo apt-get install python-pip
   python autobazaar.py -n num_stores -u username
   ```
-  Where `num_stores` is the number of OpenBazaar stores you want to run (5 or less) and `username` is the username that you use to log into them. The `autobazaar.py` script should run for between 8 and 11 minutes and when it's done, it will print out the IP address, usernames and passwords to configure the new server connections.
+  Where `num_stores` is the number of OpenBazaar stores you want to run (5 or less - however switching between multiple store from the same client doesn't work for now) and `username` is the username that you use to log into them. The `autobazaar.py` script should run for between 8 and 11 minutes and when it's done, it will print out the IP address, usernames and passwords to configure the new server connections.
   
 5. Set up new server configurations. If you don't have OpenBazaar you can obtain it from www.openbazaar.org. Once OpenBazaar is installed, add new server configurations by navigating (top right of screen) menu > default > + New Server and entering the IP address, usernames and passwords obtained in the previous step.
 
