@@ -182,7 +182,7 @@ def setup_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, 
 # get hold of the arguments
 parser = argparse.ArgumentParser()
 parser.add_argument('-u', '--username', default='user')
-parser.add_argument('-n', '--num-stores', type=int, default=5, choices=range(1, 6))
+parser.add_argument('-n', '--num-stores', type=int, default=1, choices=range(1, 6))
 parser.add_argument('-hs', '--hosting-service', default='DigitalOcean', choices=['None', 'DigitalOcean'])
 parser.add_argument('-ip', '--ip-address', default='')
 args = parser.parse_args()
