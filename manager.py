@@ -75,6 +75,9 @@ def restart_store(storename):
         local('screen -d -m -S %s -L python openbazaard.py start -p 1111%d -r %d8469 -w %d8466 -b %d8470 --pidfile %s.pid -a 0.0.0.0; sleep 1' % (storename, storenumber, storenumber, storenumber, storenumber, storename))
 
 def restart_all_stores():
+    with cd('~/OpenBazaar-Server'):
+        local('git pull')
+        local('pip install -r requirements.txt --upgrade')
     abc = load_config()
     for storename, (storenumber, username, password) in abc.iteritems():
         restart_store(storename)
