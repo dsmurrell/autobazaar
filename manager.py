@@ -127,7 +127,7 @@ def manage():
 
     # handle the restarting of stores
     abc = load_config()
-    interval = 3600 # 1 hour in seconds
+    interval = 4*3600 # 4 hour in seconds
     int_frac = interval / len(abc)
     for i, storename in enumerate(abc.keys()):
         reactor.callLater((i * int_frac) + int_frac, loop_restart_store, storename, interval)
