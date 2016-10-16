@@ -35,7 +35,8 @@ def create_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name,
                                    name=droplet_name,
                                    region=droplet_region, 
                                    ssh_keys=[ssh_key],
-                                   image='ubuntu-14-04-x64', 
+                                   #image='ubuntu-14-04-x64',
+                                   image='ubuntu-16-04-x64', 
                                    size_slug='512mb',  
                                    backups=False)
 
@@ -66,19 +67,31 @@ def install_openbazaar(ip):
     print('Installing OpenBazaar-Server and dependencies')
     with settings(host_string=ip, user = 'root'):
 
-        run('sudo add-apt-repository -y ppa:chris-lea/libsodium')
-        run('sudo apt-get update')
-        run('sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade')
-        run('sudo apt-get install -y git build-essential libssl-dev libffi-dev python-dev openssl python-pip autoconf pkg-config libtool libzmq3-dev libsodium-dev')
+        # ubuntu 14-04
+        # run('sudo add-apt-repository -y ppa:chris-lea/libsodium')
+        # run('sudo apt-get update')
+        # run('sudo DEBIAN_FRONTEND=noninteractive apt-get -y -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" dist-upgrade')
+        # run('sudo apt-get install -y git build-essential libssl-dev libffi-dev python-dev openssl python-pip autoconf pkg-config libtool libzmq3-dev libsodium-dev')
+        # run('sudo pip install cryptography')
+        # run('git clone https://github.com/zeromq/libzmq')
+        # with cd('~/libzmq'):
+        #     run('./autogen.sh && ./configure && make -j 4')
+        #     run('make check && make install && sudo ldconfig')
+        # run('git clone https://github.com/OpenBazaar/OpenBazaar-Server.git')
+        # with cd('~/OpenBazaar-Server'):
+        #     run('sudo pip install -r requirements.txt')
+        #     run('sudo pip install fabric')
+
+        # ubuntu 16-04
+        run('sudo apt-get update -y && sudo apt-get upgrade -y')
+        run('sudo apt-get install -y git build-essential libssl-dev libffi-dev python-dev openssl python-pip libsodium-dev autoconf libzmq-dev pkg-config libtool')
+        run('sudo apt-get install -y libzmq3-dev')
+        run('pip install --upgrade pip')
         run('sudo pip install cryptography')
-        run('git clone https://github.com/zeromq/libzmq')
-        with cd('~/libzmq'):
-            run('./autogen.sh && ./configure && make -j 4')
-            run('make check && make install && sudo ldconfig')
-        run('git clone https://github.com/OpenBazaar/OpenBazaar-Server.git')
+        run('sudo git clone https://github.com/OpenBazaar/OpenBazaar-Server.git')
+        run('sudo pip install fabric')
         with cd('~/OpenBazaar-Server'):
             run('sudo pip install -r requirements.txt')
-            run('sudo pip install fabric')
 
     sys.stdout.write('\nWaiting again for network services .')
     for i in range(10):
