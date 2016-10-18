@@ -1,19 +1,19 @@
 import sys
 import pip
+import json
+import time
+import datetime
+import argparse
 
 pip.main(['install', 'python-digitalocean'])
 pip.main(['install', 'fabric'])
 pip.main(['install', 'configparser'])
 pip.main(['install', 'ConfigParser'])
 
-import time
 import digitalocean
 from fabric.api import *
-import datetime
 import configparser
 from password import generate_password
-import json
-import argparse
 
 # exit if python version 3
 python_version = sys.version_info.major
@@ -166,7 +166,7 @@ def spawn_manage(ip):
         with cd('~/OpenBazaar-Server'):
             run('python manager.py spawn_manage')
 
-def setup_server(ip, username, num_stores):
+def setup_server(ip, username, num_stores, output_filename):
     install_openbazaar(ip)
     copy_autobazaar_files(ip)
     passwords = []
@@ -174,6 +174,21 @@ def setup_server(ip, username, num_stores):
         passwords.append(generate_password(32))
         add_store(ip, 'store_%d' % i, args.username, passwords[i-1])
     spawn_manage(ip)
+
+    # create and write output file
+    data = {}
+    data['ip'] = ip
+    data['username'] = username
+    for i in range(args.num_stores):
+        num = i+1
+        data[num] = {}
+        data[num]['password'] = passwords[i]
+        data[num]['rest'] = str(num) + '8469'
+        data[num]['websocket'] = str(num) + '8466'
+        data[num]['heartbeat'] = str(num) + '8470'
+    with open(output_filename, 'w') as outfile:
+        json.dump(data, outfile)
+
     print('Oh Yeah! Finished installing and running your OpenBazaar stores.')
     print('If you restart your droplet all your stores will respawn.')
     print('Now you can connect OpenBazaar (found at www.openbazaar.org) to your stores in the cloud by adding new server configurations as follows:')
@@ -187,17 +202,20 @@ def setup_server(ip, username, num_stores):
         print('\tServer IP: %s\n\tUsername: %s\n\tPassword: %s\n\tRest API Port: %s\n\tWebsocket API port: %s\n\tHeartbeat socket port: %s\n' % (ip, username, passwords[i], hap, wap, hsp))
     print('If you need to access your droplet to make any changes manually, you can ssh in using \'ssh root@%s\'' % ip)
 
-def setup_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, droplet_region, username, num_stores):
+def setup_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, droplet_region, username, num_stores, output_filename):
     print('Creating %d stores on a Digital Ocean droplet.' % num_stores)
     ip = create_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, droplet_region)
-    setup_server(ip, username, num_stores)
+    setup_server(ip, username, num_stores, output_filename)
 
 # get hold of the arguments
 parser = argparse.ArgumentParser()
 parser.add_argument('-u', '--username', default='user')
 parser.add_argument('-n', '--num-stores', type=int, default=1, choices=range(1, 6))
 parser.add_argument('-hs', '--hosting-service', default='DigitalOcean', choices=['None', 'DigitalOcean'])
-parser.add_argument('-ip', '--ip-address', default='')
+parser.add_argument('-ip', '--ip-address', default='None')
+parser.add_argument('-o', '--output-filename', default='output.json')
+parser.add_argument('-t', '--api-token', default='None')
+parser.add_argument('-spk', '--ssh-public-key', default='None')
 args = parser.parse_args()
 
 if args.hosting_service == 'None':
@@ -206,11 +224,17 @@ if args.hosting_service == 'None':
 elif args.hosting_service == 'DigitalOcean':
     Config = configparser.ConfigParser()
     Config.read('ab.cfg')
-    digital_ocean_api_token = Config.get('MANDATORY', 'digital_ocean_api_token')
-    ssh_key = Config.get('MANDATORY', 'ssh_key')
+    if args.api_token == 'None':
+        digital_ocean_api_token = Config.get('MANDATORY', 'digital_ocean_api_token')
+    else:
+        digital_ocean_api_token = args.api_token 
+    if args.ssh_public_key == 'None':
+        ssh_key = Config.get('MANDATORY', 'ssh_key')
+    else:
+        ssh_key = args.ssh_public_key
     droplet_name = Config.get('OPTIONAL', 'droplet_name')
     droplet_region = Config.get('OPTIONAL', 'droplet_region')
-    setup_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, droplet_region, args.username, args.num_stores)
+    setup_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, droplet_region, args.username, args.num_stores, args.output_filename)
 
 
 
