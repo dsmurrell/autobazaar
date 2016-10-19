@@ -31,7 +31,8 @@ def create_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name,
             print('You already have droplet with name: %s, Shutting down.' % droplet_name)
             data = {'issue': 'Looks like you already have a droplet with the name: %s' % droplet_name}
             with open(output_filename, 'w') as outfile:
-                json.dump(data, outfile)
+                outfile.write(json.dumps(data))
+                #json.dump(data, outfile)
             return sys.exit(1)
 
     droplet = digitalocean.Droplet(token=digital_ocean_api_token,
