@@ -205,7 +205,8 @@ def setup_server(ip, username, num_stores, output_filename):
 def setup_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, droplet_region, username, num_stores, output_filename):
     print('Creating %d stores on a Digital Ocean droplet.' % num_stores)
     ip = create_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, droplet_region)
-    setup_server(ip, username, num_stores, output_filename)
+    if ip:
+        setup_server(ip, username, num_stores, output_filename)
 
 # get hold of the arguments
 parser = argparse.ArgumentParser()
