@@ -24,16 +24,26 @@ else:
 
 
 def create_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, droplet_region, output_filename):
+    root_droplet_name = droplet_name
     manager = digitalocean.Manager(token=digital_ocean_api_token)
-    droplets = manager.get_all_droplets()
-    for droplet in droplets:
-        if droplet.name == droplet_name:
-            print('You already have droplet with name: %s, Shutting down.' % droplet_name)
-            data = {'issue': 'Looks like you already have a droplet with the name: %s' % droplet_name}
-            with open(output_filename, 'w') as outfile:
-                outfile.write(json.dumps(data))
-                #json.dump(data, outfile)
-            return sys.exit(1)
+
+    def already_a_droplet_by_name():
+        droplets = manager.get_all_droplets()
+        for droplet in droplets:
+            if droplet.name == droplet_name:
+                return True
+        return False
+
+    count = 1
+    while already_a_droplet_by_name():
+        droplet_name = root_droplet_name + '-' + str(count)
+        count += 1
+            
+    # # how to exit and note an issue
+    # data = {'issue': 'Looks like you already have a droplet with the name: %s' % droplet_name}
+    # with open(output_filename, 'w') as f:
+    #     json.dump(data, f)
+    # return sys.exit(1)
 
     droplet = digitalocean.Droplet(token=digital_ocean_api_token,
                                    name=droplet_name,
@@ -190,8 +200,8 @@ def setup_server(ip, username, num_stores, output_filename):
         data[num]['rest'] = str(num) + '8469'
         data[num]['websocket'] = str(num) + '8466'
         data[num]['heartbeat'] = str(num) + '8470'
-    with open(output_filename, 'w') as outfile:
-        json.dump(data, outfile)
+    with open(output_filename, 'w') as f:
+        json.dump(data, f)
 
     print('Oh Yeah! Finished installing and running your OpenBazaar stores.')
     print('If you restart your droplet all your stores will respawn.')
