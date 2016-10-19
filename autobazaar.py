@@ -23,12 +23,15 @@ else:
     import ConfigParser
 
 
-def create_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, droplet_region):
+def create_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, droplet_region, output_filename):
     manager = digitalocean.Manager(token=digital_ocean_api_token)
     droplets = manager.get_all_droplets()
     for droplet in droplets:
         if droplet.name == droplet_name:
             print('You already have droplet with name: %s, Shutting down.' % droplet_name)
+            data = {'issue': 'Looks like you already have a droplet with the name: %s' % droplet_name}
+            with open(output_filename, 'w') as outfile:
+                json.dump(data, outfile)
             return sys.exit(1)
 
     droplet = digitalocean.Droplet(token=digital_ocean_api_token,
@@ -204,7 +207,7 @@ def setup_server(ip, username, num_stores, output_filename):
 
 def setup_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, droplet_region, username, num_stores, output_filename):
     print('Creating %d stores on a Digital Ocean droplet.' % num_stores)
-    ip = create_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, droplet_region)
+    ip = create_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name, droplet_region, output_filename)
     if ip:
         setup_server(ip, username, num_stores, output_filename)
 
