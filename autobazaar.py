@@ -29,7 +29,7 @@ def create_digital_ocean_droplet(digital_ocean_api_token, ssh_key, droplet_name,
     for droplet in droplets:
         if droplet.name == droplet_name:
             print('You already have droplet with name: %s, Shutting down.' % droplet_name)
-            return False
+            return sys.exit(1)
 
     droplet = digitalocean.Droplet(token=digital_ocean_api_token,
                                    name=droplet_name,
